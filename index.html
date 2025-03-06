@@ -1,19 +1,182 @@
-<!-- index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Human-AI Creative Playground</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.dom.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.play/1.3.2/p5.play.js"></script>
-  <style>
-    body { margin: 0; overflow: hidden; }
-    #modeSelector { position: fixed; top: 20px; left: 20px; z-index: 100; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human-AI Creative Playground</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        #canvas-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .controls {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .explanation {
+            background-color: #ecf0f1;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-  <select id="modeSelector"></select>
-  <script src="sketch.js"></script>
+    <h1>Human-AI Creative Playground</h1>
+    
+    <div id="canvas-container"></div>
+    
+    <div class="controls">
+        <h2>Interaction Modes</h2>
+        <button onclick="setMode('TurnBased')">Turn-Based Creation</button>
+        <button onclick="setMode('AIEnhanced')">AI-Enhanced Drawing</button>
+        <button onclick="setMode('SwarmGuidance')">Swarm Guidance</button>
+        <button onclick="setMode('ColorHarmony')">Color Harmony</button>
+    </div>
+
+    <div class="explanation">
+        <h2>How it Works</h2>
+        <p>This interactive artwork demonstrates various modes of human-AI collaboration:</p>
+        <ul>
+            <li><strong>Turn-Based Creation:</strong> Alternating influence between human and AI.</li>
+            <li><strong>AI-Enhanced Drawing:</strong> Your strokes are amplified with AI-generated patterns.</li>
+            <li><strong>Swarm Guidance:</strong> Direct the swarm while AI maintains cohesion.</li>
+            <li><strong>Color Harmony:</strong> Watch colors evolve based on particle proximity and your interaction.</li>
+        </ul>
+        <p>Interact with the canvas using your mouse or touch to see how each mode responds differently!</p>
+    </div>
+
+    <script>
+        let particles = [];
+        let mode = 'TurnBased';
+
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+            for (let i = 0; i < 1000; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function draw() {
+            background(0, 10);
+            particles.forEach(p => {
+                p.update();
+                p.display();
+            });
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            // Reset or adjust particles based on new mode
+            particles.forEach(p => p.randomize());
+        }
+
+        class Particle {
+            constructor() {
+                this.randomize();
+            }
+
+            randomize() {
+                this.x = random(width);
+                this.y = random(height);
+                this.vx = random(-2, 2);
+                this.vy = random(-2, 2);
+                this.color = color(random(255), random(255), random(255));
+            }
+
+            update() {
+                if (mode === 'TurnBased') {
+                    // Alternate between random movement and mouse attraction
+                    if (frameCount % 120 < 60) {
+                        this.x += random(-1, 1);
+                        this.y += random(-1, 1);
+                    } else {
+                        this.x += (mouseX - this.x) * 0.01;
+                        this.y += (mouseY - this.y) * 0.01;
+                    }
+                } else if (mode === 'AIEnhanced') {
+                    // Create patterns around mouse position
+                    let angle = noise(this.x * 0.01, this.y * 0.01, frameCount * 0.01) * TWO_PI;
+                    this.x += cos(angle) * 2;
+                    this.y += sin(angle) * 2;
+                } else if (mode === 'SwarmGuidance') {
+                    // Swarm behavior with mouse influence
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx += (mouseX - this.x) * 0.0001;
+                    this.vy += (mouseY - this.y) * 0.0001;
+                    this.vx *= 0.99;
+                    this.vy *= 0.99;
+                } else if (mode === 'ColorHarmony') {
+                    // Color shifting based on proximity
+                    let neighbors = particles.filter(p => dist(this.x, this.y, p.x, p.y) < 30);
+                    if (neighbors.length > 0) {
+                        let avgColor = color(0);
+                        neighbors.forEach(n => avgColor.add(n.color));
+                        avgColor.setRed(red(avgColor) / neighbors.length);
+                        avgColor.setGreen(green(avgColor) / neighbors.length);
+                        avgColor.setBlue(blue(avgColor) / neighbors.length);
+                        this.color = lerpColor(this.color, avgColor, 0.1);
+                    }
+                    this.x += random(-1, 1);
+                    this.y += random(-1, 1);
+                }
+
+                // Wrap around edges
+                this.x = (this.x + width) % width;
+                this.y = (this.y + height) % height;
+            }
+
+            display() {
+                noStroke();
+                fill(this.color);
+                ellipse(this.x, this.y, 5, 5);
+            }
+        }
+
+        function mouseDragged() {
+            if (mode === 'AIEnhanced') {
+                // Create new particles on drag for enhanced drawing
+                for (let i = 0; i < 5; i++) {
+                    let p = new Particle();
+                    p.x = mouseX + random(-20, 20);
+                    p.y = mouseY + random(-20, 20);
+                    particles.push(p);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
