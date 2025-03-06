@@ -39,4 +39,3 @@ We invite you to try the Human-AI Creative Playground, experiment with its vario
 
 [Try the Human-AI Creative Playground Now](#) 
 
-Join us in shaping the future of collaborative digital art!
