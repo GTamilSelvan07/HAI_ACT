@@ -163,9 +163,12 @@ const OPTIONS = {
   
   /* TOUCH EVENTS */
   function touchStarted() {
-    handleInteraction(touches[0].x, touches[0].y);
+    if (touches.length > 0) {
+      handleInteraction(touches[0].x, touches[0].y);
+    }
     return false;
   }
+  
   
   function touchMoved() {
     handleInteraction(touches[0].x, touches[0].y);
