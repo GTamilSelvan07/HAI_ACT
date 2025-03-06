@@ -96,6 +96,17 @@
                 p.display();
             });
         }
+        function averageColor(colors) {
+            let r = 0, g = 0, b = 0;
+            colors.forEach(c => {
+                r += red(c);
+                g += green(c);
+                b += blue(c);
+            });
+            const count = colors.length;
+            return color(r / count, g / count, b / count);
+        }
+
 
         function setMode(newMode) {
             mode = newMode;
@@ -140,19 +151,19 @@
                     this.vx *= 0.99;
                     this.vy *= 0.99;
                 } else if (mode === 'ColorHarmony') {
-                    // Color shifting based on proximity
+                    // Find neighbors within a certain distance
                     let neighbors = particles.filter(p => dist(this.x, this.y, p.x, p.y) < 30);
                     if (neighbors.length > 0) {
-                        let avgColor = color(0);
-                        neighbors.forEach(n => avgColor.add(n.color));
-                        avgColor.setRed(red(avgColor) / neighbors.length);
-                        avgColor.setGreen(green(avgColor) / neighbors.length);
-                        avgColor.setBlue(blue(avgColor) / neighbors.length);
+                        // Calculate average color from neighbors
+                        let avgColor = averageColor(neighbors.map(n => n.color));
+                        // Smoothly transition to the new color
                         this.color = lerpColor(this.color, avgColor, 0.1);
                     }
+                    // Add small random movement for organic behavior
                     this.x += random(-1, 1);
                     this.y += random(-1, 1);
                 }
+
 
                 // Wrap around edges
                 this.x = (this.x + width) % width;
