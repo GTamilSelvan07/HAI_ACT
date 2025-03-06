@@ -202,7 +202,12 @@ const OPTIONS = {
   /* WINDOW RESIZE */
   function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    trailCanvas.resizeCanvas(windowWidth, windowHeight);
+    if(trailCanvas) {
+      trailCanvas.resizeCanvas(windowWidth, windowHeight);
+      // Optionally, reset or reinitialize the offscreen buffer if needed
+      trailCanvas.background(0);
+    }
     initParticles();
   }
+  
   
