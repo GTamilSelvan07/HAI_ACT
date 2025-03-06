@@ -157,7 +157,7 @@
                         // Calculate average color from neighbors
                         let avgColor = averageColor(neighbors.map(n => n.color));
                         // Smoothly transition to the new color
-                        this.color = lerpColor(this.color, avgColor, 0.1);
+                        this.color = lerpColor(this.color, avgColor, 0.5);
                     }
                     // Add small random movement for organic behavior
                     this.x += random(-1, 1);
