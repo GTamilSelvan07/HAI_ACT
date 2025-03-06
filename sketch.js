@@ -35,7 +35,7 @@ const OPTIONS = {
     rectMode(CENTER).ellipseMode(CENTER);
     
     // Initialize spatial partitioning
-    spatialGrid = new Grid(OPTIONS.zoneSize);
+    spatialGrid = new GRID(OPTIONS.zoneSize);
     
     // Create offscreen buffer for trails
     trailCanvas = createGraphics(width, height);
